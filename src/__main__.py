@@ -28,7 +28,7 @@ def open_infile(file):
         yield open(file, "r")
 
 
-MAX_FILES = 10
+MAX_FILES = 100_000
 
 
 @click.command()
@@ -94,7 +94,7 @@ def main(datafile, conll_string_col, cleaning_social, lang, id_col, text_col, ta
             # Update the numbers and directories for monitoring batches
             total_files_processed += 1
             batch_files_processed += 1
-            if batch_files_processed > 10:
+            if batch_files_processed > MAX_FILES:
                 batch_number += 1
                 batch_files_processed = 0
                 outdir = xml_file_dir.joinpath(f"batch_{batch_number}")
@@ -123,9 +123,6 @@ def main(datafile, conll_string_col, cleaning_social, lang, id_col, text_col, ta
 
             # Advance the progress bar
             progress.advance(task_id=task)
-
-            if total_files_processed > 25:
-                break
 
 
 if __name__ == "__main__":
