@@ -24,25 +24,25 @@ fields = [
     "subj_lemma",
     "subj_adjectival_modifiers",
     "subj_appositional_modifiers",
-    "sub_idx",
+    "sub_id",
     "verb_lemma",
     "verb_morph",
-    "verb_idx",
+    "verb_id",
     "verb_negation",
     "obj_lemma",
     "obj_adjectival_modifiers",
     "obj_appositional_modifiers",
-    "obj_idx",
+    "obj_id",
     "target",
-    "target_idx",
+    "target_id",
     "target_modifier",
     "target_modifier_pos",
     "target_modifier_deprel",
-    "target_modifier_idx",
+    "target_modifier_id",
 ]
 
 
-HOPSPARSER_MODEL = "models/UD_French-FTB-flaubert"
+HOPSPARSER_MODEL = "models/UD_all_spoken_French-flaubert"
 
 
 CSVRow = namedrecord(
@@ -57,7 +57,7 @@ MODIFIER_PATTERN = {
     "LEFT_ID": "anchor_modifier_pattern",
     "REL_OP": ">>",
     "RIGHT_ID": "modifier",
-    "RIGHT_ATTRS": {"DEP": {"IN": [amod, advmod, appos]}},
+    "RIGHT_ATTRS": {"DEP": {"IN": [amod, appos]}},
 }
 
 
@@ -76,7 +76,7 @@ SUBJECT_PATTERN = {
     "LEFT_ID": "anchor_verb",
     "REL_OP": ">",
     "RIGHT_ID": "subject",
-    "RIGHT_ATTRS": {"DEP": {"IN": [nsubjpass, nsubj, obl, agent, csubj]}},
+    "RIGHT_ATTRS": {"DEP": {"IN": [nsubjpass, nsubj]}},
 }
 
 

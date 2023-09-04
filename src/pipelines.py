@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from pathlib import Path
 from typing import Any, List
 
@@ -7,6 +8,7 @@ import spacy_stanza
 import stanza
 from hopsparser import spacy_component
 from spacy.matcher import DependencyMatcher
+from spacy_conll import init_parser
 
 from constants import (
     ANCHOR_TARGET_PATTERN,
@@ -18,9 +20,20 @@ from constants import (
     CSVRow,
 )
 
-Path("output").mkdir(exist_ok=True)
 
-logging.basicConfig(filename="output/nlp.log", filemode="w")
+def set_log_file(nlp: Any):
+    output_dir = Path("output")
+    output_dir.mkdir(exist_ok=True)
+    now = datetime.utcnow()
+    time_str = "{}-{}-{}".format(now.hour, now.min, now.second)
+    if isinstance(nlp, EnglishMatcher):
+        logging.basicConfig(
+            filename=output_dir.joinpath(f"english.{time_str}.log"), filemode="w"
+        )
+    elif isinstance(nlp, FrenchMatcher):
+        logging.basicConfig(
+            filename=output_dir.joinpath(f"french.{time_str}.log"), filemode="w"
+        )
 
 
 def build_sov_patterns(
@@ -97,12 +110,18 @@ def build_target_modifier_patterns(target: str) -> List[List[dict]]:
 
 class EnglishMatcher:
     def __init__(self, target: str | None = None):
+        # Load language model
         stanza.download("en", processors="tokenize,pos,lemma,depparse")
         self.nlp = spacy_stanza.load_pipeline(
-            "en", processors="tokenize,pos,lemma,depparse", threads=8
+            "en",
+            processors="tokenize,pos,lemma,depparse",
         )
+        self.nlp.add_pipe("conll_formatter", last=True)
+
+        # Create dependency matcher
         self.matcher = DependencyMatcher(self.nlp.vocab)
 
+        # Add Semgrex patterns to dependecy matcher
         self.sov_patterns = build_sov_patterns()
         self.matcher.add("SOV", self.sov_patterns)
 
@@ -119,10 +138,15 @@ class EnglishMatcher:
 
 class FrenchMatcher:
     def __init__(self, model_path: str, target: str | None = None) -> None:
-        self.nlp = spacy.load("fr_core_news_sm")
+        # Load language model
+        self.nlp = spacy.load("fr_core_news_lg")
         self.nlp.add_pipe("hopsparser", "hopsparser", config={"model_path": model_path})
+        self.nlp.add_pipe("conll_formatter", last=True)
+
+        # Create dependency matcher
         self.matcher = DependencyMatcher(self.nlp.vocab)
 
+        # Add Semgrex patterns to depdendency matcher
         self.sov_patterns = build_sov_patterns()
         self.matcher.add("SOV", self.sov_patterns)
 
@@ -137,81 +161,75 @@ class FrenchMatcher:
         return self.nlp(text)
 
 
-def dependency_matcher(text, nlp: Any) -> list:
+def dependency_matcher(doc, nlp: Any) -> list:
     sov_triples = []
-    # Try parsing the document with the NLP pipeline
-    try:
-        doc = nlp(text)
-    except Exception as e:
-        logging.warning(e)
+    for dep_match in nlp.matcher(doc):
+        row = CSVRow()
+        _, matches = dep_match[0], dep_match[1]
 
-    # If successful, enrich the tree with nodes
-    else:
-        for dep_match in nlp.matcher(doc):
-            row = CSVRow()
-            _, matches = dep_match[0], dep_match[1]
+        # If matching on target-modifier pattern (2)
+        if len(matches) == 2:
+            target_token, modifier_token = doc[matches[0]], doc[matches[1]]
 
-            # If matching on target-modifier pattern (2)
-            if len(matches) == 2:
-                target_token, modifier_token = doc[matches[0]], doc[matches[1]]
+            row = CSVRow(
+                **{
+                    "target": target_token.lemma_,
+                    "target_id": target_token.i,
+                    "target_modifier": modifier_token.lemma_,
+                    "target_modifier_pos": modifier_token.pos_,
+                    "target_modifier_deprel": modifier_token.dep_,
+                    "target_modifier_id": modifier_token.i,
+                }
+            )
 
-                row = CSVRow(
-                    **{
-                        "target": target_token.lemma_,
-                        "target_idx": target_token.idx,
-                        "target_modifier": modifier_token.lemma_,
-                        "target_modifier_pos": modifier_token.pos_,
-                        "target_modifier_deprel": modifier_token.dep_,
-                        "target_modifier_idx": modifier_token.idx,
-                    }
-                )
+        # If matching on subject-object-verb (3)
+        # or subject-object-verb-negation patterns (4)
+        elif len(matches) == 3 or len(matches) == 4:
+            verb_token, subj_token, obj_token = (
+                doc[matches[0]],
+                doc[matches[1]],
+                doc[matches[2]],
+            )
 
-            # If matching on subject-object-verb (3)
-            # or subject-object-verb-negation patterns (4)
-            elif len(matches) == 3 or len(matches) == 4:
-                verb_token, subj_token, obj_token = (
-                    doc[matches[0]],
-                    doc[matches[1]],
-                    doc[matches[2]],
-                )
+            if len(matches) == 4:
+                neg_token = doc[matches[3]]
+                neg = neg_token.lemma_
+            else:
+                neg = None
 
-                if len(matches) == 4:
-                    neg_token = doc[matches[3]]
-                    neg = neg_token.lemma_
-                else:
-                    neg = None
+            # List the SOV object's adjectival and appositional modifiers
+            obj_adjectival_modifiers = " | ".join(
+                w.lemma_ for w in obj_token.children if "amod" in w.dep_
+            )
+            obj_appositional_modifiers = " | ".join(
+                w.lemma_ for w in obj_token.children if "appos" in w.dep_
+            )
 
-                obj_adjectival_modifiers = " | ".join(
-                    w.lemma_ for w in obj_token.children if "amod" in w.dep_
-                )
-                obj_appositional_modifiers = " | ".join(
-                    w.lemma_ for w in obj_token.children if "appos" in w.dep_
-                )
+            # List the SOV subject's adjectival and appositional modifiers
+            subj_adjectival_modifiers = " | ".join(
+                w.lemma_ for w in subj_token.children if "amod" in w.dep_
+            )
+            subj_appositional_modifiers = " | ".join(
+                w.lemma_ for w in subj_token.children if "appos" in w.dep_
+            )
 
-                subj_adjectival_modifiers = " | ".join(
-                    w.lemma_ for w in subj_token.children if "amod" in w.dep_
-                )
-                subj_appositional_modifiers = " | ".join(
-                    w.lemma_ for w in subj_token.children if "appos" in w.dep_
-                )
+            row = CSVRow(
+                **{
+                    "subj_lemma": subj_token.lemma_,
+                    "subj_adjectival_modifiers": subj_adjectival_modifiers,
+                    "subj_appositional_modifiers": subj_appositional_modifiers,
+                    "sub_id": subj_token.i,
+                    "verb_lemma": verb_token.lemma_,
+                    "verb_morph": verb_token.morph.__str__(),
+                    "verb_id": verb_token.i,
+                    "verb_negation": neg,
+                    "obj_lemma": obj_token.lemma_,
+                    "obj_adjectival_modifiers": obj_adjectival_modifiers,
+                    "obj_appositional_modifiers": obj_appositional_modifiers,
+                    "obj_id": obj_token.i,
+                }
+            )
 
-                row = CSVRow(
-                    **{
-                        "subj_lemma": subj_token.lemma_,
-                        "subj_adjectival_modifiers": subj_adjectival_modifiers,
-                        "subj_appositional_modifiers": subj_appositional_modifiers,
-                        "sub_idx": subj_token.idx,
-                        "verb_lemma": verb_token.lemma_,
-                        "verb_morph": verb_token.morph.__str__(),
-                        "verb_idx": verb_token.idx,
-                        "verb_negation": neg,
-                        "obj_lemma": obj_token.lemma_,
-                        "obj_adjectival_modifiers": obj_adjectival_modifiers,
-                        "obj_appositional_modifiers": obj_appositional_modifiers,
-                        "obj_idx": obj_token.idx,
-                    }
-                )
-
-            sov_triples.append(row)
+        sov_triples.append(row)
 
     return sov_triples
