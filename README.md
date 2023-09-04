@@ -111,18 +111,20 @@ python src/__main__.py TEXTFILE --target ChatGPT --cleaning-social
 After entering one of the above commands, you will be prompted to complete other necessary information. The following options are prompted so as to make calling the command easier for the user.
 
 ```shell
-ID column name:
+ID column name :
 >> id
-Text column name:
+Text column name :
 >> text
-lang ('en', 'fr'):
+Select the language of the text ('en', 'fr')
 >> fr
+What name do you want to give the out-file?
+>> french_tweets.csv
 ```
 
 You can give the values of the above options directly in the initial command if you wish to skip the prompt.
 
 ```shell
-python src/__main__.py TEXTFILE --cleaning-social --target ChatGPT --id-col id --text-col text --lang fr
+python src/__main__.py TEXTFILE --cleaning-social --target ChatGPT --id-col id --text-col text --lang fr --out-file french_tweets.csv
 ```
 
-The program will make a directory called `output/` at the root of this repository. It will contain a subdirectory, whose name is the abbreviation of the entered language, and that subdirectory will contain the results. In example: `./output/fr/output.csv`
+The program will make a directory called `output/` at the root of this repository. It will contain a subdirectory, whose name is the abbreviation of the entered language, and that subdirectory will contain a file for the results, i.e. `./output/fr/french_tweets.csv`, and a file that stores the parsed document's Conll representation, `./output/fr/french_tweets_conll.csv`. The latter file is generated so that the model's predictions, which are expensive to produce, are not lost. The Conll string representation can subsequently be [parsed and reconverted into a SpaCy document](https://spacy.io/universe/project/spacy-conll/) for future data manipulation.
