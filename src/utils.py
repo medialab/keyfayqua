@@ -29,10 +29,19 @@ def normalizeToken(token):
 
 
 def normalizer(tweet):
+    # Remove user citatation (i.e. "via @theregister")
+    tweet = re.sub(r"(?!http)via(\s{0,}@[a-z]*)", "", tweet)
+
+    # Remove trailing white space
     tweet = tweet.strip()
+
+    # Normalize apostrophes
     tokens = tokenizer.tokenize(tweet.replace("’", "'").replace("…", "..."))
+
+    # Clean tokens
     normTweet = " ".join([normalizeToken(token) for token in tokens])
 
+    # Normalize English-language conjunctions
     normTweet = (
         normTweet.replace("cannot ", "can not ")
         .replace("n't ", " n't ")

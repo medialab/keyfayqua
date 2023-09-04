@@ -3,7 +3,6 @@ from contextlib import contextmanager
 
 import casanova
 import click
-from lxml import etree
 from rich.progress import (
     BarColumn,
     MofNCompleteColumn,
@@ -14,10 +13,9 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
-from constants import NS, OUTDIR, fields
-from pipelines import ConllPipe, EnglishTokenizer, FrenchTokenizer, nlp_parser
+from constants import HOPSPARSER_MODEL, OUTDIR, fields
+from pipelines import EnglishMatcher, FrenchMatcher, dependency_matcher
 from utils import normalizer
-from xml_parser import build_dependency_tree, xml_to_row
 
 
 @contextmanager
@@ -28,13 +26,9 @@ def open_infile(file):
         yield open(file, "r")
 
 
-MAX_FILES = 100_000
-
-
 @click.command()
 # Declare the required basics
 @click.argument("datafile", required=True)
-@click.option("--conll-string-col", required=False)
 @click.option("--cleaning-social", is_flag=True, default=False)
 @click.option("--target", required=False)
 # Prompt the user to declare names of required columns
@@ -42,12 +36,10 @@ MAX_FILES = 100_000
 @click.option("--text-col", prompt="Text column name: ", required=True)
 # Prompt the user to choose a supported language
 @click.option("--lang", prompt=True, type=click.Choice(["en", "fr"]))
-def main(datafile, conll_string_col, cleaning_social, lang, id_col, text_col, target):
+def main(datafile, cleaning_social, target, lang, id_col, text_col):
     # Make out-file
     outdir = OUTDIR.joinpath(lang)
     outdir.mkdir(exist_ok=True, parents=True)
-    xml_file_dir = outdir.joinpath("xml")
-    xml_file_dir.mkdir(exist_ok=True)
     outfile = str(outdir.joinpath("output.csv"))
 
     # Count in-file
@@ -65,61 +57,34 @@ def main(datafile, conll_string_col, cleaning_social, lang, id_col, text_col, ta
         TimeRemainingColumn(),
     ) as progress, open(outfile, "w") as of, open_infile(datafile) as f:
         # Set up the CSV enricher
-        enricher = casanova.enricher(f, of, select=[id_col, text_col], add=fields)
-        id_col_pos = enricher.headers[id_col]
+        enricher = casanova.enricher(
+            f, of, select=[id_col, text_col], add=["cleaned_text"] + fields
+        )
 
-        if conll_string_col:
-            pipe = ConllPipe(lang)
-            text_col = conll_string_col
+        if lang == "fr":
+            pipe = EnglishMatcher(target=target)
         else:
-            if lang == "fr":
-                pipe = FrenchTokenizer()
-            else:
-                pipe = EnglishTokenizer()
+            pipe = FrenchMatcher(model_path=HOPSPARSER_MODEL, target=target)
 
         # Set up task for progress bar
         task = progress.add_task(
             description="[bold red]Processing file...", total=file_length
         )
 
-        # Set up directory and numbers for monitoring batches
-        total_files_processed, batch_files_processed, batch_number = 0, 0, 1
-        outdir = xml_file_dir.joinpath("batch_1")
-        outdir.mkdir(exist_ok=True)
-
         for row, text in enricher.cells(text_col, with_rows=True):
-            # Get the document's ID for the XML out file
-            doc_id = row[id_col_pos]
-
-            # Update the numbers and directories for monitoring batches
-            total_files_processed += 1
-            batch_files_processed += 1
-            if batch_files_processed > MAX_FILES:
-                batch_number += 1
-                batch_files_processed = 0
-                outdir = xml_file_dir.joinpath(f"batch_{batch_number}")
-                outdir.mkdir(exist_ok=True)
-            outfile = outdir.joinpath(f"{doc_id}.xml")
-
             # If necessary, clean away social-media characters from text
             if cleaning_social:
-                text = normalizer(text)
+                cleaned_text = normalizer(text)
+            else:
+                cleaned_text = text
 
-            # Parse the dependencies and convert into XML tree
-            root = nlp_parser(text=text, nlp=pipe)
-
-            # Write the XML tree to a file
-            et = etree.ElementTree(root)
-            et.write(outfile, pretty_print=True)
-
-            # In Python, parse subject-object-verb triples in XML tree
-            root = build_dependency_tree(root)
+            # Parse the dependencies
+            sov_triples = dependency_matcher(text=cleaned_text, nlp=pipe)
 
             # Parse triples and write to CSV file
-            for sov in root.findall(".//subject-object-verb", namespaces=NS):
-                result = xml_to_row(sov, target=target)
-                if result:
-                    enricher.writerow(row, result)
+            for match in sov_triples:
+                if match.target is not None or match.verb_lemma is not None:
+                    enricher.writerow(row, [cleaned_text] + match.as_csv_row())
 
             # Advance the progress bar
             progress.advance(task_id=task)
