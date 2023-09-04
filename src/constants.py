@@ -3,13 +3,11 @@ from pathlib import Path
 from casanova import namedrecord
 from spacy.symbols import (
     VERB,
-    acomp,
     advmod,
     agent,
     amod,
     appos,
     csubj,
-    csubjpass,
     dobj,
     iobj,
     neg,
@@ -17,7 +15,6 @@ from spacy.symbols import (
     nsubjpass,
     obj,
     obl,
-    root,
 )
 
 OUTDIR = Path("output")
@@ -60,7 +57,7 @@ MODIFIER_PATTERN = {
     "LEFT_ID": "anchor_modifier_pattern",
     "REL_OP": ">>",
     "RIGHT_ID": "modifier",
-    "RIGHT_ATTRS": {"DEP": {"IN": [amod, advmod, appos, acomp]}},
+    "RIGHT_ATTRS": {"DEP": {"IN": [amod, advmod, appos]}},
 }
 
 
@@ -79,7 +76,7 @@ SUBJECT_PATTERN = {
     "LEFT_ID": "anchor_verb",
     "REL_OP": ">",
     "RIGHT_ID": "subject",
-    "RIGHT_ATTRS": {"DEP": {"IN": [nsubjpass, nsubj, obl]}},
+    "RIGHT_ATTRS": {"DEP": {"IN": [nsubjpass, nsubj, obl, agent, csubj]}},
 }
 
 

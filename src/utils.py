@@ -1,7 +1,7 @@
 # Credit to BERTweet. I've copied their TweetNormalizer and made some modifications.
 # https://github.com/VinAIResearch/BERTweet/blob/master/TweetNormalizer.py
 
-from emoji import demojize
+import emoji
 from nltk.tokenize import TweetTokenizer
 import re
 
@@ -17,8 +17,8 @@ def normalizeToken(token):
         return re.sub(r"#", "", token)
     elif lowercased_token.startswith("http") or lowercased_token.startswith("www"):
         return "HTTPURL"
-    elif len(token) == 1:
-        return demojize(token)
+    elif len(token) == 1 and emoji.is_emoji(token):
+        return ""
     else:
         if token == "’":
             return "'"
