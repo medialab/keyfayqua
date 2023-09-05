@@ -1,56 +1,32 @@
-# Credit to BERTweet. I've copied their TweetNormalizer and made some modifications.
-# https://github.com/VinAIResearch/BERTweet/blob/master/TweetNormalizer.py
+import gzip
+from contextlib import contextmanager
+from pathlib import PosixPath
+import os
 
-import re
-
-import emoji
-from nltk.tokenize import TweetTokenizer
-from ural.patterns import URL_IN_TEXT_RE
-
-tokenizer = TweetTokenizer()
+import gzip
+import shutil
 
 
-def normalizeToken(token):
-    if token.startswith("#"):
-        return re.sub(r"#", "", token)
-    elif len(token) == 1 and emoji.is_emoji(token):
-        return ""
+@contextmanager
+def open_infile(file):
+    if isinstance(file, PosixPath):
+        file = str(file)
+    if file.endswith(".gz"):
+        yield gzip.open(file, "rt")
     else:
-        if token == "’":
-            return "'"
-        elif token == "…":
-            return "..."
+        yield open(file, "r")
+
+
+def compress_outfile(outfile):
+    if isinstance(outfile, PosixPath):
+        outfile = str(outfile)
+    with open(outfile, "rb") as f_in:
+        compressed_outfile = outfile + ".gz"
+        print(f"\nCompressing output to '{compressed_outfile}'. Please wait.\n")
+        try:
+            with gzip.open(compressed_outfile, "wb") as f_out:
+                shutil.copyfileobj(f_in, f_out)
+        except Exception as e:
+            raise e
         else:
-            return token
-
-
-def normalizer(tweet):
-    # Remove trailing white space
-    tweet = tweet.strip()
-
-    # Separate titles / pre-colon spans from sentences
-    tweet = re.sub(r"(^(\w+\W+){1,2})*:", "\\1.", tweet)
-
-    # Remove URLs
-    tweet = URL_IN_TEXT_RE.sub(repl="", string=tweet)
-
-    # Normalize apostrophes
-    tokens = tokenizer.tokenize(tweet.replace("’", "'").replace("…", "..."))
-
-    # Clean tokens
-    normTweet = " ".join([normalizeToken(token) for token in tokens])
-
-    # Remove user citatation (i.e. "via @theregister")
-    tweet = re.sub(r"(?!HTTPURL)via(\s{0,}@\w*)", "", tweet)
-
-    # Remove user handles
-    normTweet = re.sub(r"@", "", normTweet)
-
-    normTweet = (
-        normTweet.replace(" p . m .", "  p.m.")
-        .replace(" p . m ", " p.m ")
-        .replace(" a . m .", " a.m.")
-        .replace(" a . m ", " a.m ")
-    )
-
-    return " ".join(normTweet.split())
+            os.remove(outfile)

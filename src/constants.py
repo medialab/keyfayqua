@@ -55,9 +55,9 @@ ANCHOR_TARGET_PATTERN = {"RIGHT_ID": "anchor_modifier_pattern", "RIGHT_ATTRS": {
 
 MODIFIER_PATTERN = {
     "LEFT_ID": "anchor_modifier_pattern",
-    "REL_OP": ">>",
+    "REL_OP": ">",
     "RIGHT_ID": "modifier",
-    "RIGHT_ATTRS": {"DEP": {"IN": [amod, appos]}},
+    "RIGHT_ATTRS": {"DEP": {"IN": [amod, appos, advmod]}},
 }
 
 
