@@ -124,3 +124,22 @@ The original text may be cleaned if the flag `--clean-social` is provided with t
 >>> re.sub(r'\s+', ' ', text)
 'ChatGPT-4 . plus de 1000 prompts pour améliorer votre création https.'
 ```
+
+Result:
+
+```text
+1	ChatGPT-4	chatgpt-4	PROPN	ADJ	Gender=Fem|Number=Sing	0	ROOT	_	_
+2	.	.	PUNCT	PUNCT	_	1	punct	_	_
+
+1	plus	plus	ADV	ADV	_	4	advmod	_	_
+2	de	de	ADP	ADP	_	3	case	_	_
+3	1000	1000	NUM	PRON	NumType=Card	1	iobj	_	_
+4	prompts	prompt	NOUN	ADJ	Gender=Masc|Number=Plur	0	ROOT	_	_
+5	 	 	ADP	SPACE	_	4	dep	_	SpaceAfter=No
+6	pour	pour	ADP	ADP	_	7	mark	_	_
+7	améliorer	améliorer	VERB	VERB	VerbForm=Inf	4	acl	_	_
+8	votre	votre	DET	DET	Number=Sing|Poss=Yes	9	det	_	_
+9	création	création	NOUN	NOUN	Gender=Fem|Number=Sing	7	obj	_	_
+10	https	https	NOUN	PROPN	Gender=Masc|Number=Sing	9	nmod	_	SpaceAfter=No
+11	.	.	PUNCT	PUNCT	_	4	punct	_	SpaceAfter=No
+```
