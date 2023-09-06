@@ -25,9 +25,6 @@ def normalizeToken(token):
 
 
 def normalizer(text):
-    # Remove trailing white space
-    text = text.strip()
-
     # Remove emojis
     text = emoji.replace_emoji(text, replace="")
 
@@ -42,5 +39,11 @@ def normalizer(text):
 
     # Remove user handles and hashtags
     text = re.sub(r"[@#]", "", text)
+
+    # Remove trailing white space
+    text = text.strip()
+
+    # Remove double spaces
+    text = re.sub(r"\s+", " ", text)
 
     return text

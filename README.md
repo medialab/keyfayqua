@@ -52,23 +52,15 @@ The `parse` command requires the path to the in-file and a path to the out-file 
 
 The original text may be cleaned if the flag `--clean-social` is provided with the `parse` command. This flag adds an extra step in which the text is pre-processed with a [normalizing script](src/normalizer.py) designed for social media text documents, specifically Tweets. The normalizer applies the following changes:
 
-1. remove trailing white space
-
-```python
->>> text = ' Trailing white space at beginning.'
->>> text.strip()
-'Trailing white space at beginning.'
-```
-
 1. remove emojis
 
 ```python
 >>> import emoji
 >>>
->>> text = '#FTLV 📆 20-22 sept. : initiation à la paléographie, proposée par l’@Ecoledeschartes-@psl_univ dans le cadre de la #formationcontinue. Inscriptions jusqu’au 10 sept. ➡️ https://lc.cx/VQNpZE'
+>>> text = 'ChatGPT-4 : plus de 1000 prompts 🤯 pour améliorer votre #création https://openai.com/blog/chatgpt via @siecledigital'
 >>>
 >>> emoji.replace_emoji(text, replace='')
-'#FTLV  20-22 sept. : initiation à la paléographie, proposée par l’@Ecoledeschartes-@psl_univ dans le cadre de la #formationcontinue. Inscriptions jusqu’au 10 sept.  https://lc.cx/VQNpZE'
+'ChatGPT-4 : plus de 1000 prompts  pour améliorer votre #création https://openai.com/blog/chatgpt via @siecledigital'
 ```
 
 2. separate titles / pre-colon spans from sentences [`(^(\w+\W+){1,2})*:`]
@@ -76,10 +68,10 @@ The original text may be cleaned if the flag `--clean-social` is provided with t
 ```python
 >>> import re
 >>>
->>> text = '#FTLV  20-22 sept. : initiation à la paléographie, proposée par l’@Ecoledeschartes-@psl_univ dans le cadre de la #formationcontinue. Inscriptions jusqu’au 10 sept.  https://lc.cx/VQNpZE'
+>>> text = 'ChatGPT-4 : plus de 1000 prompts  pour améliorer votre #création https://openai.com/blog/chatgpt via @siecledigital'
 >>>
 >>> re.sub(r'(^(\w+\W+){1,2})*:', '\\1.', text)
-'#FTLV  20-22 sept. . initiation à la paléographie, proposée par l’@Ecoledeschartes-@psl_univ dans le cadre de la #formationcontinue. Inscriptions jusqu’au 10 sept.  https.//lc.cx/VQNpZE'
+'ChatGPT-4 . plus de 1000 prompts  pour améliorer votre #création https.//openai.com/blog/chatgpt via @siecledigital'
 ```
 
 3. remove URLs
@@ -87,34 +79,48 @@ The original text may be cleaned if the flag `--clean-social` is provided with t
 ```python
 >>> from ural.patterns import URL_IN_TEXT_RE
 >>>
->>> text = '#FTLV  20-22 sept. . initiation à la paléographie, proposée par l’@Ecoledeschartes-@psl_univ dans le cadre de la #formationcontinue. Inscriptions jusqu’au 10 sept.  https.//lc.cx/VQNpZE'
+>>> text = 'ChatGPT-4 . plus de 1000 prompts  pour améliorer votre #création https.//openai.com/blog/chatgpt via @siecledigital'
 >>>
 >>> URL_IN_TEXT_RE.sub(repl='', string=text)
-'#FTLV  20-22 sept. . initiation à la paléographie, proposée par l’@Ecoledeschartes-@psl_univ dans le cadre de la #formationcontinue. Inscriptions jusqu’au 10 sept.  https.'
+'ChatGPT-4 . plus de 1000 prompts  pour améliorer votre #création https. via @siecledigital'
 ```
 
-4. remove # and @ signs [`[@#]`]
+4. remove citations at the end of a post [`(?!https)via(\s{0,}@\w*)`]
 
 ```python
 >>> import re
 >>>
->>> text = '#FTLV  20-22 sept. . initiation à la paléographie, proposée par l’@Ecoledeschartes-@psl_univ dans le cadre de la #formationcontinue. Inscriptions jusqu’au 10 sept.  https.'
->>>
->>>re.sub(r'[@#]', '',  text)
-'FTLV  20-22 sept. . initiation à la paléographie, proposée par l’Ecoledeschartes-psl_univ dans le cadre de la formationcontinue. Inscriptions jusqu’au 10 sept.  https.'
-```
-
-5. remove citations at the end of a post [`(?!https)via(\s{0,}@\w*)`]
-
-```python
->>> import re
->>>
->>> text = 'ChatGPT-4 . plus de 1000 prompts pour améliorer votre création de contenu http. via @siecledigital'
+>>> text = 'ChatGPT-4 . plus de 1000 prompts  pour améliorer votre #création https. via @siecledigital'
 >>>
 >>> re.sub(r"(?!https)via(\s{0,}@\w*)", "", text)
-'ChatGPT-4 . plus de 1000 prompts pour améliorer votre création de contenu http. '
+'ChatGPT-4 . plus de 1000 prompts  pour améliorer votre #création https. '
 ```
 
-6. normalize apostrophes and elipses
+5. remove # and @ signs [`[@#]`]
 
-7. normalize spaces in English-language temporal markers (`a.m.`, `p.m.`)
+```python
+>>> import re
+>>>
+>>> text = 'ChatGPT-4 . plus de 1000 prompts  pour améliorer votre #création https. '
+>>>
+>>>re.sub(r'[@#]', '',  text)
+'ChatGPT-4 . plus de 1000 prompts  pour améliorer votre création https. '
+```
+
+6. remove trailing white space
+
+```python
+>>> text = 'ChatGPT-4 . plus de 1000 prompts  pour améliorer votre création https. '
+>>>
+>>> text.strip()
+'ChatGPT-4 . plus de 1000 prompts  pour améliorer votre création https.'
+```
+
+7. remove double spaces
+
+```python
+>>> text = 'ChatGPT-4 . plus de 1000 prompts  pour améliorer votre création https.'
+>>>
+>>> re.sub(r'\s+', ' ', text)
+'ChatGPT-4 . plus de 1000 prompts pour améliorer votre création https.'
+```
