@@ -4,6 +4,8 @@
 
 `keyfayqua` is a Command Line tool that features 2 commands. First, the `parse` command annotates a corpus of texts, detecting entities and dependency relationships, and outputs each document's annotations as a [CoNLL-formatted](https://universaldependencies.org/format.html) string in the column of a CSV file. Second, the `match` command reconverts the CoNLL string into a SpaCy object and, using [Semgrex patterns](https://aclanthology.org/2023.tlt-1.7/) and SpaCy's [`DependencyMatcher`](https://spacy.io/api/dependencymatcher/), detects dependency relationships between nodes in the parsed sentences. By providing Semgrex patterns, the user chooses the types of relationships that will be searched with the `match` command.
 
+The idea is that you'll use the `parse` command only one time on the corpus, achieving a stable set of the annotations, and then apply various Semgrex patterns with the `match` command. Consequently, you could also apply the `match` command and test out your Semgrex patterns on any corpus whose document annotations have been written and stored in the CoNLL format.
+
 `keyfayqua` takes advantage of SpaCy's Python architecture as well as high-performance dependency parsers specially trained for French and English. For French, we use one of Loïc Grobol and Benoît Crabbés [Hopsparser models](https://zenodo.org/record/7703346/). For English, we use Stanford NLP's [Stanza model](https://github.com/stanfordnlp/stanza). Because `keyfayqua` relies on SpaCy and because Stanford NLP has developed a `spacy-stanza` plug-in, any of [Stanza's models](https://stanfordnlp.github.io/stanza/available_models.html) can theoretically be used during the `parse` command, though this feature isn't yet added.
 
 #### Hopsparser (French)
@@ -81,12 +83,11 @@ _Note about French:_
 
 > By selecting the French language, you'll be asked if you have already downloaded a Hopsparser model and where you've stored it. If you do not have a Hopsparser model, the script will download one for you. The default model is the [`Flaubert` model for Spoken french](https://zenodo.org/record/7703346/files/UD_all_spoken_French-flaubert.tar.xz?download=1) and the default download location is in this repository at `./hopsparser_model/UD_all_spoken_French-flaubert/`. Upon repeated uses of the `parse` command on French-language corpora, you can provide this path to the downloaded model, or the path to wherever you've moved the model. If you want to use another of the Hopsparser models, you can download it yourself and provide the path when prompted after calling the `parse` command.
 
-Upon completion or exit of the `parse` command, the CSV file to which the program had been writing each text document's annotations will be compressed using Gzip. The out-file is expected to be very large despite having only 4 columns:
+Upon completion or exit of the `parse` command, the CSV file to which the program had been writing each text document's annotations will be compressed using Gzip. The out-file is expected to be very large despite having only 3 columns:
 
 1. an identifier for the text document, given with the option `--id-col`
-2. the original text, given with the option `--text-col`
-3. the version of the text that was parsed
-4. the CoNLL-formatted string
+2. the version of the text that was parsed
+3. the CoNLL-formatted string
 
 #### Pre-processing
 

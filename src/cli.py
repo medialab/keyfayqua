@@ -5,7 +5,7 @@ import typer
 from ebbe import Timer
 from typing_extensions import Annotated
 
-from src.cli_parser import ParseProgress, batch_enricher, setup_parser, single_enricher
+from src.cli_parser import ParseProgress, batch_enricher, setup_parser
 from src.utils import compress_outfile, count_file_length
 
 supported_languages = ["french", "english"]
