@@ -89,7 +89,7 @@ The original text may be cleaned if the flag `--clean-social` is provided with t
 >>>
 >>> text = '#FTLV  20-22 sept. . initiation à la paléographie, proposée par l’@Ecoledeschartes-@psl_univ dans le cadre de la #formationcontinue. Inscriptions jusqu’au 10 sept.  https.//lc.cx/VQNpZE'
 >>>
->>> URL_IN_TEXT_RE.sub(repl='HTTPURL', string=text)
+>>> URL_IN_TEXT_RE.sub(repl='', string=text)
 '#FTLV  20-22 sept. . initiation à la paléographie, proposée par l’@Ecoledeschartes-@psl_univ dans le cadre de la #formationcontinue. Inscriptions jusqu’au 10 sept.  https.'
 ```
 

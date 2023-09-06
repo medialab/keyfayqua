@@ -12,7 +12,7 @@ tokenizer = TweetTokenizer()
 
 def normalizeToken(token):
     if token.startswith("#"):
-        return re.sub(r"#", "", token)
+        return
     elif len(token) == 1 and emoji.is_emoji(token):
         return ""
     else:
@@ -24,33 +24,23 @@ def normalizeToken(token):
             return token
 
 
-def normalizer(tweet):
+def normalizer(text):
     # Remove trailing white space
-    tweet = tweet.strip()
+    text = text.strip()
+
+    # Remove emojis
+    text = emoji.replace_emoji(text, replace="")
 
     # Separate titles / pre-colon spans from sentences
-    tweet = re.sub(r"(^(\w+\W+){1,2})*:", "\\1.", tweet)
+    text = re.sub(r"(^(\w+\W+){1,2})*:", "\\1.", text)
 
     # Remove URLs
-    tweet = URL_IN_TEXT_RE.sub(repl="", string=tweet)
-
-    # Normalize apostrophes
-    tokens = tokenizer.tokenize(tweet.replace("’", "'").replace("…", "..."))
-
-    # Clean tokens
-    normTweet = " ".join([normalizeToken(token) for token in tokens])
+    text = URL_IN_TEXT_RE.sub(repl="", string=text)
 
     # Remove user citatation (i.e. "via @theregister")
-    tweet = re.sub(r"(?!HTTPURL)via(\s{0,}@\w*)", "", tweet)
+    text = re.sub(r"(?!https)via(\s{0,}@\w*)", "", text)
 
-    # Remove user handles
-    normTweet = re.sub(r"@", "", normTweet)
+    # Remove user handles and hashtags
+    text = re.sub(r"[@#]", "", text)
 
-    normTweet = (
-        normTweet.replace(" p . m .", "  p.m.")
-        .replace(" p . m ", " p.m ")
-        .replace(" a . m .", " a.m.")
-        .replace(" a . m ", " a.m ")
-    )
-
-    return " ".join(normTweet.split())
+    return text
