@@ -4,6 +4,33 @@
 
 Using open-source dependency parser models trained on French and English, `keyfayqua` parses entities and dependency relationships in text data, and it stores the results in a CoNLL string. Subsequently, `keyfayqua` reconverts the CoNLL strings into SpaCy documents, which permits the user to search for dependencies that match the use case, such as subject-object-verb triplets.
 
+#### Hopsparser (French)
+
+```bibtex
+@inproceedings{grobol:hal-03223424,
+    title = {{Analyse en dépendances du français avec des plongements contextualisés}},
+    author = {Grobol, Loïc and Crabbé, Benoît},
+    url = {https://hal.archives-ouvertes.fr/hal-03223424},
+    booktitle = {{Actes de la 28ème Conférence sur le Traitement Automatique des Langues Naturelles}},
+    eventtitle = {{TALN-RÉCITAL 2021}},
+    venue = {Lille, France},
+    pdf = {https://hal.archives-ouvertes.fr/hal-03223424/file/HOPS_final.pdf},
+    hal_id = {hal-03223424},
+    hal_version = {v1},
+}
+```
+
+#### Stanza (English)
+
+```bibtex
+@inproceedings{qi2020stanza,
+    title={Stanza: A {Python} Natural Language Processing Toolkit for Many Human Languages},
+    author={Qi, Peng and Zhang, Yuhao and Zhang, Yuhui and Bolton, Jason and Manning, Christopher D.},
+    booktitle = "Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics: System Demonstrations",
+    year={2020}
+}
+```
+
 ## Install
 
 1. Create and activate a virtual Python environment (>=3.11).
@@ -26,6 +53,8 @@ pip install -e .
 ## Usage
 
 ### Parse dependency relationships
+
+By selecting the French language, you'll be asked if you already have a Hopsparser model downloaded and where you've stored it. If you do not have the Hopsparser model, the script will download it for you. The default model and download location is `./hopsparser_model/UD_all_spoken_French-flaubert/`. Subsequently, when you use `keyfayqua` to parse French corpora, you can provide this path to the downloaded model or whichever path of wherever you've moved it.
 
 ```shell
  Usage: keyfayqua parse [OPTIONS]
