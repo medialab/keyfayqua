@@ -2,7 +2,7 @@
 
 ## Tools to detect subject-object-verb triples in French and English
 
-Using open-source dependency parser models trained on French and English, `keyfayqua`'s [main program](src/__main__.py`) produces data about subject-object-verb (SOV) triples in sentences. Optionally, the program can also retrieve words dependent on a target word anywhere in the sentence.
+Using open-source dependency parser models trained on French and English, `keyfayqua` parses entities and dependency relationships in text data, and it stores the results in a CoNLL string. Subsequently, `keyfayqua` reconverts the CoNLL strings into SpaCy documents, which permits the user to search for dependencies that match the use case, such as subject-object-verb triplets.
 
 ## Install
 
