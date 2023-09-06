@@ -127,18 +127,20 @@ The original text may be cleaned if the flag `--clean-social` is provided with t
 
 Result:
 
-| ID  | FORM      | LEMMMA    | UPOS  | XPOS  | FEATS        | HEAD          | DEPREL | DEPS | MISC          |
-| --- | --------- | --------- | ----- | ----- | ------------ | ------------- | ------ | ---- | ------------- | ------------- |
-| 1   | ChatGPT-4 | chatgpt-4 | PROPN | ADJ   | Gender=Fem   | Number=Sing   | 0      | ROOT | \_            |
-| 2   | .         | .         | PUNCT | PUNCT | \_           | 1             | punct  | \_   | \_            |
-|     |           |           |       |       |              |               |        |      |               |
-| 1   | plus      | plus      | ADV   | ADV   | \_           | 4             | advmod | \_   | \_            |
-| 2   | de        | de        | ADP   | ADP   | \_           | 3             | case   | \_   | \_            |
-| 3   | 1000      | 1000      | NUM   | PRON  | NumType=Card | 1             | iobj   | \_   | \_            |
-| 4   | prompts   | prompt    | NOUN  | VERB  | Tense=Pres   | VerbForm=Part | 0      | ROOT | \_            | \_            |
-| 5   | pour      | pour      | ADP   | ADP   | \_           | 6             | mark   | \_   | \_            |
-| 6   | améliorer | améliorer | VERB  | VERB  | VerbForm=Inf | 4             | acl    | \_   | \_            |
-| 7   | votre     | votre     | DET   | DET   | Number=Sing  | Poss=Yes      | 8      | det  | \_            | \_            |
-| 8   | création  | création  | NOUN  | NOUN  | Gender=Fem   | Number=Sing   | 6      | obj  | \_            | \_            |
-| 9   | https     | https     | INTJ  | PROPN | Gender=Masc  | Number=Sing   | 8      | nmod | \_            | SpaceAfter=No |
-| 10  | .         | .         | PUNCT | PUNCT | \_           | 4             | punct  | \_   | SpaceAfter=No |
+| ID  | FORM      | LEMMMA    | UPOS  | XPOS  | FEATS      | HEAD        | DEPREL | DEPS | MISC |
+| --- | --------- | --------- | ----- | ----- | ---------- | ----------- | ------ | ---- | ---- |
+| 1   | ChatGPT-4 | chatgpt-4 | PROPN | ADJ   | Gender=Fem | Number=Sing | 0      | ROOT | \_   |
+| 2   | .         | .         | PUNCT | PUNCT | \_         | 1           | punct  | \_   |
+
+| ID  | FORM      | LEMMMA    | UPOS  | XPOS  | FEATS        | HEAD          | DEPREL | DEPS | MISC |
+| --- | --------- | --------- | ----- | ----- | ------------ | ------------- | ------ | ---- | ---- |
+| 1   | plus      | plus      | ADV   | ADV   | \_           | 4             | advmod | \_   |
+| 2   | de        | de        | ADP   | ADP   | \_           | 3             | case   | \_   |
+| 3   | 1000      | 1000      | NUM   | PRON  | NumType=Card | 1             | iobj   | \_   |
+| 4   | prompts   | prompt    | NOUN  | VERB  | Tense=Pres   | VerbForm=Part | 0      | ROOT | \_   |
+| 5   | pour      | pour      | ADP   | ADP   | \_           | 6             | mark   | \_   |
+| 6   | améliorer | améliorer | VERB  | VERB  | VerbForm=Inf | 4             | acl    | \_   |
+| 7   | votre     | votre     | DET   | DET   | Number=Sing  | Poss=Yes      | 8      | det  | \_   |
+| 8   | création  | création  | NOUN  | NOUN  | Gender=Fem   | Number=Sing   | 6      | obj  | \_   |
+| 9   | https     | https     | INTJ  | PROPN | Gender=Masc  | Number=Sing   | 8      | nmod | \_   |
+| 10  | .         | .         | PUNCT | PUNCT | \_           | 4             | punct  | \_   |
