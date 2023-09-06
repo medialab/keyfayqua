@@ -165,7 +165,15 @@ The original text may be cleaned if the flag `--clean-social` is provided with t
 'ChatGPT-4 . plus de 1000 prompts pour améliorer votre création https.'
 ```
 
-Result:
+Original text:
+
+> ChatGPT-4 : plus de 1000 prompts 🤯 pour améliorer votre #création https://openai.com/blog/chatgpt via @siecledigital
+
+Cleaned text:
+
+> ChatGPT-4 . plus de 1000 prompts pour améliorer votre création https.'
+
+CoNLL result:
 
 | ID  | FORM      | LEMMMA    | UPOS  | XPOS  | FEATS                     | HEAD | DEPREL | DEPS | MISC |
 | --- | --------- | --------- | ----- | ----- | ------------------------- | ---- | ------ | ---- | ---- |
