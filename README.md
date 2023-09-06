@@ -48,6 +48,8 @@ The `parse` command parses the text documents in the in-file and outputs a CSV f
 
 The `parse` command requires the path to the in-file and a path to the out-file CSV. Upon completion or exit of the program, the out-file CSV will be compressed using Gzip. The out-file is expected to be very large despite having only 4 columns: (1) an identifier for the text document, given with the option `--id-col`, (2) the original text, given with the option `--text-col`, (3) the version of the text that was parsed (`parsed_text`), and (4) the CoNLL string.
 
+#### Pre-processing
+
 The original text may be cleaned if the flag `--clean-social` is provided with the `parse` command. This flag adds an extra step in which the text is pre-processed with a [normalizing script](src/normalizer.py) designed for social media text documents, specifically Tweets. The normalizer applies the following changes:
 
 1. remove trailing white space
