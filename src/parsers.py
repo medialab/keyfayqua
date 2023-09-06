@@ -10,22 +10,21 @@ from hopsparser import spacy_component
 from spacy.matcher import DependencyMatcher
 from spacy_conll import init_parser
 
+spacy.require_gpu()
+
 
 class EnglishParser:
     def __init__(self):
         # Load language model
-        stanza.download("en", processors="tokenize,pos,lemma,depparse")
+        stanza.download("en", processors="tokenize,pos,lemma,depparse,ner")
         self.nlp = spacy_stanza.load_pipeline(
             "en",
-            processors="tokenize,pos,lemma,depparse",
+            processors="tokenize,pos,lemma,depparse,ner",
         )
         self.nlp.add_pipe("conll_formatter", last=True)
 
         # Create dependency matcher
         self.matcher = DependencyMatcher(self.nlp.vocab)
-
-    def __call__(self, text: str):
-        return self.nlp(text)
 
 
 class FrenchParser:
@@ -37,6 +36,3 @@ class FrenchParser:
 
         # Create dependency matcher
         self.matcher = DependencyMatcher(self.nlp.vocab)
-
-    def __call__(self, text: str):
-        return self.nlp(text)

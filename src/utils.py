@@ -1,10 +1,18 @@
 import gzip
 from contextlib import contextmanager
 from pathlib import PosixPath
+import casanova
 import os
 
 import gzip
 import shutil
+
+from rich.progress import (
+    Progress,
+    SpinnerColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
 
 
 @contextmanager
@@ -30,3 +38,14 @@ def compress_outfile(outfile):
             raise e
         else:
             os.remove(outfile)
+
+
+def count_file_length(datafile) -> int:
+    with Progress(
+        TextColumn("[progress.description]{task.description}"),
+        SpinnerColumn(),
+        TimeElapsedColumn(),
+    ) as p:
+        p.add_task(description="[bold]Measuring file length")
+        infile_length = casanova.reader.count(datafile)
+        return infile_length
