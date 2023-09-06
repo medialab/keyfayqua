@@ -9,6 +9,8 @@ from src.cli_parser import ParseProgress, batch_enricher, setup_parser
 from src.utils import compress_outfile, count_file_length
 
 supported_languages = ["french", "english"]
+match_dir = Path("semgrex")
+match_dir.mkdir(exist_ok=True)
 
 
 class SupportedLang(str, Enum):
@@ -77,5 +79,36 @@ def parse(
 
 
 @app.command()
-def bye(name: str):
-    print(f"Bye {name}")
+def match(
+    datafile: Annotated[
+        Path,
+        typer.Option(
+            exists=True,
+            file_okay=True,
+            dir_okay=False,
+            writable=False,
+            readable=True,
+            resolve_path=True,
+            help="Path to file with Conll results",
+        ),
+    ],
+    matchfile: Annotated[
+        Path,
+        typer.Option(
+            exists=True,
+            file_okay=True,
+            dir_okay=False,
+            writable=False,
+            readable=True,
+            resolve_path=True,
+            help="Name of JSON file in semgrex folder",
+        ),
+    ],
+    outfile: Annotated[Path, typer.Option(help="Path to file with dependency matches")],
+    id_col: Annotated[str, typer.Option(help="ID column name")] = "id",
+    text_col: Annotated[str, typer.Option(help="Text column name")] = "text",
+    lang: Annotated[
+        SupportedLang, typer.Option(case_sensitive=False)
+    ] = SupportedLang.en,
+):
+    pass
