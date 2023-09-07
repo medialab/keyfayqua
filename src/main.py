@@ -20,6 +20,7 @@ from src.cli.parse_command import (
     setup_parser,
 )
 from src.constants import CHUNK_SIZE, SupportedLang
+
 from src.parsers import ConLLParser
 from src.utils.filesystem import (
     MatchEnricher,
@@ -30,7 +31,6 @@ from src.utils.filesystem import (
 
 match_dir = Path("semgrex")
 match_dir.mkdir(exist_ok=True)
-
 
 app = typer.Typer()
 
@@ -56,7 +56,7 @@ def parse(
     ] = SupportedLang.en,
     clean_social: Annotated[bool, typer.Option("--clean-social")] = False,
     batch_size: int = CHUNK_SIZE,
-    model_path: str | None = None,
+    model_path: str = "",
 ):
     # STEP ONE --------------------------
     # Set up the Parser
@@ -134,7 +134,7 @@ def match(
     lang: Annotated[
         SupportedLang, typer.Option(case_sensitive=False)
     ] = SupportedLang.en,
-    model_path: str | None = None,
+    model_path: str = "",
 ):
     torch.set_num_threads(1)
     # STEP ONE --------------------------

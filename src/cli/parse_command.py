@@ -1,7 +1,6 @@
 import subprocess
 from pathlib import Path
 
-import click
 import typer
 from casanova import Enricher
 from ebbe import as_chunks
@@ -24,14 +23,13 @@ def setup_parser(
     lang: str, model_path: str | None = None
 ) -> FrenchParser | EnglishParser:
     if lang == "fr":
-        if not model_path:
+        if model_path == "":
             need_to_download = typer.confirm(
                 "\nDo you need to download the Hopsparser model for French?"
             )
             if not need_to_download:
-                french_model_path = click.prompt(
+                french_model_path = typer.prompt(
                     text="\nWhere is the downloaded Hopsparser model?",
-                    type=click.Path(exists=True),
                 )
                 french_model = str(french_model_path)
             else:
