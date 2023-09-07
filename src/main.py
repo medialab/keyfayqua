@@ -139,8 +139,8 @@ def match(
 
     # STEP THREE --------------------------
     # Process the file
-    with ParseProgress as p, Timer(name="SpaCy pipeline"):
-        task = p.add_task(description="[bold cyan]Parsing...", total=infile_length)
+    with MatchProgress as p, Timer(name="DependencyMatcher"):
+        task = p.add_task(description="[bold cyan]Matching...", total=infile_length)
         try:
             with MatchEnricher(datafile, outfile, id_col, add_cols=[]) as enricher:
                 for row, doc in conll_converter(enricher, conll_col, parser):

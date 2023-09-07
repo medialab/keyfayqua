@@ -6,9 +6,7 @@ from spacy.matcher import DependencyMatcher
 from spacy_conll import init_parser
 from spacy_conll.parser import ConllParser as SpacyConllParse
 from spacy.tokens.doc import Doc
-
-
-spacy.require_gpu()
+import spacy
 
 
 class EnglishParser:
