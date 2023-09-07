@@ -174,3 +174,7 @@ def match(
 
         else:
             compress_outfile(outfile)
+
+
+if __name__ == "__main__":
+    app()
