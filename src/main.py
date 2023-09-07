@@ -5,7 +5,7 @@ import typer
 from ebbe import Timer
 from typing_extensions import Annotated
 
-from src.cli.match_command import conll_parsing
+from src.cli.match_command import conll_converter, MatchProgress
 from src.cli.parse_command import (
     ParseProgress,
     parser_batches,
@@ -14,7 +14,12 @@ from src.cli.parse_command import (
 )
 from src.constants import CHUNK_SIZE, SupportedLang
 from src.parsers import ConLLParser
-from src.utils.filesystem import ParseEnricher, compress_outfile, count_file_length
+from src.utils.filesystem import (
+    MatchEnricher,
+    ParseEnricher,
+    compress_outfile,
+    count_file_length,
+)
 
 match_dir = Path("semgrex")
 match_dir.mkdir(exist_ok=True)
@@ -77,6 +82,7 @@ def parse(
                                 doc._.conll_str,
                             ],  # addendum contains parsed text and CoNLL string
                         )
+                        # After parsing one doc, advance the progress bar forward
                         p.advance(task_id=task)
 
         except KeyboardInterrupt:
@@ -115,10 +121,37 @@ def match(
     ],
     outfile: Annotated[Path, typer.Option(help="Path to file with dependency matches")],
     id_col: Annotated[str, typer.Option(help="ID column name")] = "id",
+    conll_col: Annotated[
+        str, typer.Option(help="CoNLL string column name")
+    ] = "conll_string",
     lang: Annotated[
         SupportedLang, typer.Option(case_sensitive=False)
     ] = SupportedLang.en,
 ):
     torch.set_num_threads(1)
+    # STEP ONE --------------------------
+    # Set up the Parser
     parser = ConLLParser(lang=lang)
-    conll_parsing(parser=parser, datafile=datafile)
+
+    # STEP TWO --------------------------
+    # Count the length of the in-file
+    infile_length = count_file_length(datafile)
+
+    # STEP THREE --------------------------
+    # Process the file
+    with ParseProgress as p, Timer(name="SpaCy pipeline"):
+        task = p.add_task(description="[bold cyan]Parsing...", total=infile_length)
+        try:
+            with MatchEnricher(datafile, outfile, id_col, add_cols=[]) as enricher:
+                for row, doc in conll_converter(enricher, conll_col, parser):
+                    print(doc)
+
+                    # After writing all the doc's matches, advance the progress bar
+                    p.advance(task)
+
+        except KeyboardInterrupt:
+            print("\nKeyboard interrupted the program.")
+            compress_outfile(outfile)
+
+        else:
+            compress_outfile(outfile)

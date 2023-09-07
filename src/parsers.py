@@ -5,6 +5,7 @@ from hopsparser import spacy_component
 from spacy.matcher import DependencyMatcher
 from spacy_conll import init_parser
 from spacy_conll.parser import ConllParser as SpacyConllParse
+from spacy.tokens.doc import Doc
 
 
 spacy.require_gpu()
@@ -49,5 +50,5 @@ class ConLLParser:
         else:
             self.nlp = SpacyConllParse(init_parser("en_core_web_lg", "spacy"))
 
-    def __call__(self, text: str):
+    def __call__(self, text: str) -> Doc:
         return self.nlp.parse_conll_text_as_spacy(text=text)
