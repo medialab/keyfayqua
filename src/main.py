@@ -5,7 +5,12 @@ import typer
 from ebbe import Timer
 from typing_extensions import Annotated
 
-from src.cli.match_command import conll_converter, MatchProgress
+from src.cli.match_command import (
+    conll_converter,
+    MatchProgress,
+    MatchIndex,
+    match_dependencies,
+)
 from src.cli.parse_command import (
     ParseProgress,
     parser_batches,
@@ -127,25 +132,34 @@ def match(
     lang: Annotated[
         SupportedLang, typer.Option(case_sensitive=False)
     ] = SupportedLang.en,
+    model_path: str | None = None,
 ):
     torch.set_num_threads(1)
     # STEP ONE --------------------------
-    # Set up the Parser
-    parser = ConLLParser(lang=lang)
+    # Set up the parsers
+    conll_parser = ConLLParser(lang=lang)
+    dep_parser = setup_parser(lang, model_path)
 
     # STEP TWO --------------------------
+    # Parse the Semgrex patterns
+    semgrex = MatchIndex(file=matchfile)
+    dep_parser.add_semgrex(semgrex.matches)
+
+    # STEP THREE --------------------------
     # Count the length of the in-file
     infile_length = count_file_length(datafile)
 
-    # STEP THREE --------------------------
+    # STEP FOUR --------------------------
     # Process the file
     with MatchProgress as p, Timer(name="DependencyMatcher"):
         task = p.add_task(description="[bold cyan]Matching...", total=infile_length)
         try:
-            with MatchEnricher(datafile, outfile, id_col, add_cols=[]) as enricher:
-                for row, doc in conll_converter(enricher, conll_col, parser):
-                    print(doc)
-
+            with MatchEnricher(
+                datafile, outfile, id_col, add_cols=semgrex.columns()
+            ) as enricher:
+                for row, doc in conll_converter(enricher, conll_col, conll_parser):
+                    match_dependencies(doc=doc, parser=dep_parser)
+                    print("\n\n")
                     # After writing all the doc's matches, advance the progress bar
                     p.advance(task)
 

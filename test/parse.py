@@ -27,7 +27,7 @@ FRENCH_KWARGS = {
 }
 
 
-class EnglishTest(unittest.TestCase):
+class English(unittest.TestCase):
     def test_small(self):
         df = outdir.joinpath("english", "english.small.text.csv")
         ENGLISH_KWARGS.update({"datafile": df})
@@ -41,7 +41,7 @@ class EnglishTest(unittest.TestCase):
         parse(**ENGLISH_KWARGS)
 
 
-class FrenchTest(unittest.TestCase):
+class French(unittest.TestCase):
     def test_small(self):
         df = outdir.joinpath("french", "french.small.text.csv")
         FRENCH_KWARGS.update({"datafile": df})

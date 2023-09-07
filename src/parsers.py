@@ -3,10 +3,9 @@ import spacy_stanza
 import stanza
 from hopsparser import spacy_component
 from spacy.matcher import DependencyMatcher
+from spacy.tokens.doc import Doc
 from spacy_conll import init_parser
 from spacy_conll.parser import ConllParser as SpacyConllParse
-from spacy.tokens.doc import Doc
-import spacy
 
 
 class EnglishParser:
@@ -25,6 +24,11 @@ class EnglishParser:
     def pipe(self, batch: list[tuple], batch_size: int):
         yield from self.nlp.pipe(batch, as_tuples=True, batch_size=batch_size)
 
+    def add_semgrex(self, patterns: dict):
+        self.patterns = patterns
+        for pattern_name, pattern in patterns.items():
+            self.matcher.add(pattern_name, [pattern])
+
 
 class FrenchParser:
     def __init__(self, model_path: str) -> None:
@@ -38,6 +42,11 @@ class FrenchParser:
 
     def pipe(self, batch: list[tuple], batch_size: int):
         yield from self.nlp.pipe(batch, as_tuples=True, batch_size=batch_size)
+
+    def add_semgrex(self, patterns: dict):
+        self.patterns = patterns
+        for pattern_name, pattern in patterns.items():
+            self.matcher.add(pattern_name, [pattern])
 
 
 class ConLLParser:

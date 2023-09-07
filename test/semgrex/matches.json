@@ -1,0 +1,26 @@
+{
+    "RootSubj": [
+        {
+          "RIGHT_ID": "root",
+          "RIGHT_ATTRS": {"DEP": "ROOT"}
+        },
+        {
+          "LEFT_ID": "root",
+          "REL_OP": ">",
+          "RIGHT_ID": "subject",
+          "RIGHT_ATTRS": {"DEP": "nsubj"}
+        }
+      ],
+      "NounAdv": [
+        {
+          "RIGHT_ID": "noun",
+          "RIGHT_ATTRS": {"DEP": "nsubj"}
+        },
+        {
+          "LEFT_ID": "noun",
+          "REL_OP": ">",
+          "RIGHT_ID": "amod",
+          "RIGHT_ATTRS": {"DEP": "amod"}
+        }
+      ]
+}

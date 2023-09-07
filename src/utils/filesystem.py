@@ -54,6 +54,7 @@ class EnricherBase:
             self.enricher.headers
         # Try creating a Casanova enricher with a Gzip file
         except:
+            self.open_infile.close()
             self.open_infile = gzip.open(self.infile, "rt")
             self.enricher = casanova.enricher(
                 self.open_infile,
