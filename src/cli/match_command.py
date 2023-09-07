@@ -2,10 +2,14 @@ import logging
 from pathlib import Path
 import json
 from typing import Generator
+from casanova import namedrecord
+from typing import Any
+from collections import OrderedDict
 
 import casanova
 from ebbe import Timer
 from spacy.tokens.doc import Doc
+from spacy.tokens.token import Token
 
 from src.parsers import ConLLParser, EnglishParser, FrenchParser
 
@@ -38,33 +42,11 @@ def conll_converter(
         yield row, doc
 
 
-def match_dependencies(doc: Doc, parser: FrenchParser | EnglishParser):
-    matches_in_doc = parser.matcher(doc)
-    for pattern_hash, token_ids in matches_in_doc:
-        pattern_name = parser.nlp.vocab.strings[pattern_hash]
-        _, pattern = parser.matcher.get(pattern_hash)
-        for i in range(len(token_ids)):
-            node_name = pattern[0][i]["RIGHT_ID"]
-            node_token = doc[token_ids[i]]
-            col_suffix = form_column_prefix(
-                pattern_name=pattern_name, node_name=node_name
-            )
-
-
-def form_column_prefix(pattern_name: str, node_name: str):
-    return "{}-{}".format(pattern_name, node_name.upper())
-
-
 class MatchIndex:
     def __init__(self, file) -> None:
         with open(file, "r") as f:
             self.matches: dict = json.load(f)
 
-    def patterns(self) -> Generator[tuple[str, list], None, None]:
-        for pattern_name, pattern_nodes in self.matches.items():
-            yield pattern_name, pattern_nodes
-
-    def columns(self):
         prefixes = []
         for pattern_name, pattern_nodes in self.patterns():
             for node in pattern_nodes:
@@ -76,11 +58,62 @@ class MatchIndex:
 
         cols = []
         for col_prefix in prefixes:
-            cols.append("{}_id".format(col_prefix))
-            cols.append("{}_lemma".format(col_prefix))
-            cols.append("{}_pos".format(col_prefix))
-            cols.append("{}_deprel".format(col_prefix))
-            cols.append("{}_entity".format(col_prefix))
-            cols.append("{}_noun_phrase".format(col_prefix))
+            cols.append("{}id".format(col_prefix))
+            cols.append("{}lemma".format(col_prefix))
+            cols.append("{}pos".format(col_prefix))
+            cols.append("{}deprel".format(col_prefix))
+            cols.append("{}entity".format(col_prefix))
+            cols.append("{}noun_phrase".format(col_prefix))
 
-        return cols
+        self.columns = cols
+
+        self.row_dict = OrderedDict()
+        [self.row_dict.update({k: None}) for k in self.columns]
+
+    def patterns(self) -> Generator[tuple[str, list], None, None]:
+        for pattern_name, pattern_nodes in self.matches.items():
+            yield pattern_name, pattern_nodes
+
+
+def match_dependencies(
+    doc: Doc, parser: FrenchParser | EnglishParser, match_index: MatchIndex
+) -> Generator[list, None, None]:
+    # Deploy DependencyMatcher
+    matches_in_doc = parser.matcher(doc)
+
+    # Parse matches in the document
+    for pattern_hash, token_ids in matches_in_doc:
+        # Unhash name matched pattern
+        pattern_name = parser.nlp.vocab.strings[pattern_hash]
+
+        # Get a list of the pattern's nodes
+        _, pattern = parser.matcher.get(pattern_hash)
+
+        # For this match pattern, create a new dictionary
+        # in which to store node data
+        d = match_index.row_dict.copy()
+
+        # Add all the match's nodes to a row
+        for i in range(len(token_ids)):
+            node_name = pattern[0][i]["RIGHT_ID"]
+            node_token = doc[token_ids[i]]
+            col_prefix = form_column_prefix(
+                pattern_name=pattern_name, node_name=node_name
+            )
+            d.update(
+                {
+                    "{}id".format(col_prefix): node_token.i,
+                    "{}id".format(col_prefix): node_token.i,
+                    "{}lemma".format(col_prefix): node_token.lemma_,
+                    "{}pos".format(col_prefix): node_token.pos_,
+                    "{}deprel".format(col_prefix): node_token.dep_,
+                    "{}entity".format(col_prefix): node_token.ent_type_,
+                }
+            )
+
+        # "{}noun_phrase".format(col_prefix): node_token.,
+        yield list(d.values())
+
+
+def form_column_prefix(pattern_name: str, node_name: str):
+    return "{}_{}_".format(pattern_name, node_name.upper())

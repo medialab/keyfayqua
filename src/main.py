@@ -155,11 +155,15 @@ def match(
         task = p.add_task(description="[bold cyan]Matching...", total=infile_length)
         try:
             with MatchEnricher(
-                datafile, outfile, id_col, add_cols=semgrex.columns()
+                datafile, outfile, id_col, add_cols=list(semgrex.row_dict.keys())
             ) as enricher:
                 for row, doc in conll_converter(enricher, conll_col, conll_parser):
-                    match_dependencies(doc=doc, parser=dep_parser)
-                    print("\n\n")
+                    for matches in match_dependencies(
+                        doc=doc, parser=dep_parser, match_index=semgrex
+                    ):
+                        if matches:
+                            enricher.writerow(row, matches)
+                    # print("\n\n")
                     # After writing all the doc's matches, advance the progress bar
                     p.advance(task)
 
