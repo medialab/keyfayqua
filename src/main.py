@@ -3,12 +3,14 @@ from pathlib import Path
 import torch
 import typer
 from ebbe import Timer
+from rich import print
 from typing_extensions import Annotated
 
 from src.cli.match_command import (
-    conll_converter,
-    MatchProgress,
     MatchIndex,
+    MatchProgress,
+    conll_converter,
+    display_columns,
     match_dependencies,
 )
 from src.cli.parse_command import (
@@ -144,6 +146,8 @@ def match(
     # Parse the Semgrex patterns
     semgrex = MatchIndex(file=matchfile)
     dep_parser.add_semgrex(semgrex.matches)
+    new_cols = list(semgrex.row_dict.keys())
+    display_columns(new_cols)
 
     # STEP THREE --------------------------
     # Count the length of the in-file
@@ -155,16 +159,13 @@ def match(
         task = p.add_task(description="[bold cyan]Matching...", total=infile_length)
         try:
             with MatchEnricher(
-                datafile, outfile, id_col, add_cols=list(semgrex.row_dict.keys())
+                infile=datafile, outfile=outfile, id_col=id_col, add_cols=new_cols
             ) as enricher:
                 for row, doc in conll_converter(enricher, conll_col, conll_parser):
                     for matches in match_dependencies(
                         doc=doc, parser=dep_parser, match_index=semgrex
                     ):
-                        if matches:
-                            enricher.writerow(row, matches)
-                    # print("\n\n")
-                    # After writing all the doc's matches, advance the progress bar
+                        enricher.writerow(row, matches)
                     p.advance(task)
 
         except KeyboardInterrupt:

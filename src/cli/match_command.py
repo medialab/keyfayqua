@@ -1,15 +1,9 @@
-import logging
-from pathlib import Path
 import json
 from typing import Generator
-from casanova import namedrecord
-from typing import Any
 from collections import OrderedDict
 
 import casanova
-from ebbe import Timer
 from spacy.tokens.doc import Doc
-from spacy.tokens.token import Token
 
 from src.parsers import ConLLParser, EnglishParser, FrenchParser
 
@@ -31,6 +25,16 @@ MatchProgress = Progress(
     TimeElapsedColumn(),
     TimeRemainingColumn(),
 )
+from rich.console import Console
+from rich.table import Table
+
+
+def display_columns(new_cols: list):
+    table = Table(title="Semgrex Matches")
+    table.add_column("Column name")
+    [table.add_row(col) for col in new_cols]
+    console = Console()
+    console.print(table)
 
 
 def conll_converter(

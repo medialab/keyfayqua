@@ -1,3 +1,4 @@
+print("importing NLP models...")
 import spacy
 import spacy_stanza
 import stanza
