@@ -39,13 +39,20 @@ def conll_converter(
 
 
 def match_dependencies(doc: Doc, parser: FrenchParser | EnglishParser):
-    matches = parser.matcher(doc)
-    for pattern_hash, token_ids in matches:
-        pattern_string = parser.nlp.vocab.strings[pattern_hash]
-        pattern = parser.patterns[pattern_string]
+    matches_in_doc = parser.matcher(doc)
+    for pattern_hash, token_ids in matches_in_doc:
+        pattern_name = parser.nlp.vocab.strings[pattern_hash]
+        _, pattern = parser.matcher.get(pattern_hash)
         for i in range(len(token_ids)):
-            node_name = pattern[i]["RIGHT_ID"]
+            node_name = pattern[0][i]["RIGHT_ID"]
             node_token = doc[token_ids[i]]
+            col_suffix = form_column_prefix(
+                pattern_name=pattern_name, node_name=node_name
+            )
+
+
+def form_column_prefix(pattern_name: str, node_name: str):
+    return "{}-{}".format(pattern_name, node_name.upper())
 
 
 class MatchIndex:
@@ -58,22 +65,22 @@ class MatchIndex:
             yield pattern_name, pattern_nodes
 
     def columns(self):
-        def form_column(pattern_name, node):
-            node_name = node.get("RIGHT_ID")
-            return "{}-{}".format(pattern_name, node_name.upper())
-
-        suffixes = []
+        prefixes = []
         for pattern_name, pattern_nodes in self.patterns():
             for node in pattern_nodes:
-                suffixes.append(form_column(pattern_name, node))
+                prefixes.append(
+                    form_column_prefix(
+                        pattern_name=pattern_name, node_name=node.get("RIGHT_ID")
+                    )
+                )
 
         cols = []
-        for col_suffix in suffixes:
-            cols.append("{}_id".format(col_suffix))
-            cols.append("{}_lemma".format(col_suffix))
-            cols.append("{}_pos".format(col_suffix))
-            cols.append("{}_deprel".format(col_suffix))
-            cols.append("{}_entity".format(col_suffix))
-            cols.append("{}_noun_phrase".format(col_suffix))
+        for col_prefix in prefixes:
+            cols.append("{}_id".format(col_prefix))
+            cols.append("{}_lemma".format(col_prefix))
+            cols.append("{}_pos".format(col_prefix))
+            cols.append("{}_deprel".format(col_prefix))
+            cols.append("{}_entity".format(col_prefix))
+            cols.append("{}_noun_phrase".format(col_prefix))
 
         return cols
