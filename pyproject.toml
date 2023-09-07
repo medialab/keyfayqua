@@ -68,7 +68,7 @@ version = "0.0.1"
 
 
 [project.scripts]
-keyfayqua = "src.cli:app"
+keyfayqua = "src.main:app"
 
 [build-system]
 requires = ["setuptools>=64", "wheel"]
