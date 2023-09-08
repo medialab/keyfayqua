@@ -29,7 +29,7 @@ def normalizer(text):
     text = emoji.replace_emoji(text, replace="")
 
     # Separate titles / pre-colon spans from sentences
-    text = re.sub(r"(^(\w+\W){1,2}:)|(^(\S+\s\S+:))|(^(\S+:))", "\\1.", text)
+    text = re.sub(r"(^\s*\S+(\s+\S+)?\s*):", "\\1.", text)
 
     # Remove URLs
     text = URL_IN_TEXT_RE.sub(repl="", string=text)
