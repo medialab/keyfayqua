@@ -37,7 +37,6 @@ dependencies = [
     "six==1.16.0",
     "smart-open==6.3.0",
     "spacy==3.6.1",
-    "spacy-conll==3.4.0",
     "spacy-legacy==3.0.12",
     "spacy-loggers==1.0.4",
     "spacy-stanza==1.0.3",
@@ -54,6 +53,7 @@ dependencies = [
     "wasabi==1.1.2",
     "hopsparser @ git+ssh://git@github.com/kat-kel/hopsparser.git",
     "hopsparser[spacy]",
+    "spacy-conll @ git+ssh://git@github.com/kat-kel/spacy_conll.git",
     "fr-core-news-lg @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_lg-3.6.0/fr_core_news_lg-3.6.0-py3-none-any.whl#sha256=3858ac2323d2c0fcd1fb2ef25325cfc7da2797a9501dad1c6b676bc779a1c257",
     "en-core-web-lg @ https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.6.0/en_core_web_lg-3.6.0-py3-none-any.whl#sha256=9012584a8fcf5bc61bedb13a4b511fb81ffff9f770958ee06366671be10632e9",
 ]
