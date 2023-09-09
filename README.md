@@ -7,8 +7,9 @@
 1. [How to install](#install)
 2. [How to use](#usage)
    1. [`parse` command](#parse-dependency-relationships) (intially parse the text documents)
-   2. [`match` comand](#match-dependency-patterns) (apply Semgrex patterns to match syntactic relationships)
-   3. [Match output](#match-output)
+   2. [`test-conll` command] (test CoNLL string validity)
+   3. [`match` comand](#match-dependency-patterns) (apply Semgrex patterns to match syntactic relationships)
+   4. [Match output](#match-output)
 3. [Optional pre-processing](#optional-pre-processing)
 
 ---
@@ -106,6 +107,23 @@ Upon completion or exit of the `parse` command, the CSV file to which the progra
 1. an identifier for the text document, given with the option `--id-col`
 2. the version of the text that was parsed
 3. the CoNLL-formatted string
+
+### Test CoNLL string validity
+
+Sometimes it's useful to quickly test the validity and integrity of your corpus's CoNLL-formatted strings, before proceding to the `match` command and applying Semgrex patterns. With the command `test-conll`, test the `spacy_conll` conversion from CoNLL string to SpaCy doc on your dataset.
+
+```shell
+
+╭─ Options ───────────────────────────────────────────────────╮
+│ *  --datafile         FILE  Path to file with Conll results │
+│                             [default: None]                 │
+│                             [required]                      │
+│    --conll-col        TEXT  CoNLL string column name        │
+│                             [default: conll_string]         │
+│    --help                   Show this message and exit.     │
+╰─────────────────────────────────────────────────────────────╯
+
+```
 
 ### Match dependency patterns
 
