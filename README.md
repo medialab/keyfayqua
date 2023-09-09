@@ -129,7 +129,7 @@ Sometimes it's useful to quickly test the validity and integrity of your corpus'
 
 After creating a data file with annotated tokens correctly written in a CoNLL format, you're ready to apply Semgrex matches and detect syntactic relationships.
 
-First, you'll need a JSON file with a set of Semgrex match patterns. See an example [here](). Then, you'll call the `match` command.
+First, you'll need a JSON file with a set of Semgrex match patterns. See an example [here](#composing-the-semgrex-file). Then, you'll call the `match` command.
 
 ```shell
  Usage: keyfayqua match [OPTIONS]
@@ -185,7 +185,7 @@ Each match on a Semgrex pattern is written to a row of the CSV, along with the t
 
 The `match` command requires a JSON file with valid Semgrex patterns. The JSON must be composed of key-value pairs in which the key is the name of the Semgrex pattern and its value is an array of the nodes in the pattern.
 
-The JSON format closely resembles the format SpaCy uses for their DependencyMatcher. Below, we've taken [the example in their documentation](<(https://spacy.io/usage/rule-based-matching#dependencymatcher)>) and translated it into the JSON format. It's essentially the same. Rather than attribute the list of dictionaries to a Python object, we assign it to a key, the pattern name (`"PatternName"`) in the JSON. Read SpaCy's documentation on the DependencyMatcher for more information.
+The JSON format closely resembles the format SpaCy uses for their DependencyMatcher. Below, we've taken [the example in their documentation](https://spacy.io/usage/rule-based-matching#dependencymatcher) and translated it into the JSON format. It's essentially the same. Rather than attribute the list of dictionaries to a Python object, we assign it to a key, the pattern name (`"PatternName"`) in the JSON. Read SpaCy's documentation on the DependencyMatcher for more information.
 
 ```json
 {
