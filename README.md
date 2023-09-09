@@ -7,7 +7,7 @@
 1. [How to install](#install)
 2. [How to use](#usage)
    1. [`parse` command](#parse-dependency-relationships) (intially parse the text documents)
-   2. [`test-conll` command] (test CoNLL string validity)
+   2. [`test-conll` command](#test-conll-string-validity) (test CoNLL string validity)
    3. [`match` comand](#match-dependency-patterns) (apply Semgrex patterns to match syntactic relationships)
    4. [Match output](#match-output)
 3. [Optional pre-processing](#optional-pre-processing)
