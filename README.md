@@ -14,9 +14,9 @@
 
 ---
 
-The idea is that you'll use the `parse` command only one time on the corpus, achieving a stable set of the annotations, and then apply various Semgrex patterns with the `match` command. Consequently, you could also apply the `match` command and test out your Semgrex patterns on any corpus whose document annotations have been written and stored in the CoNLL format.
+The idea is that you'll use the `parse` command only one time on the corpus, achieving a stable set of the annotations, and then apply various Semgrex patterns with the `match` command. Consequently, you could also apply the `match` command and test out your Semgrex patterns on any corpus whose document annotations have been written and stored in the CoNLL format. For example, if you manage to parse a corpus with any transformer model you like and then convert the model output into a CoNLL format, you can provide that data to the `match` command and apply your Semgrex patterns. The reason to use the CoNLL format, rather than a SpaCy `DocBin`, for instance, is that it can (theoretically) be generalized across many model types.
 
-`keyfayqua` takes advantage of SpaCy's Python architecture as well as high-performance dependency parsers specially trained for French and English. For French, we use one of Loïc Grobol and Benoît Crabbés [Hopsparser models](https://zenodo.org/record/7703346/). For English, we use Stanford NLP's [Stanza model](https://github.com/stanfordnlp/stanza). Because `keyfayqua` relies on SpaCy and because Stanford NLP has developed a `spacy-stanza` plug-in, any of [Stanza's models](https://stanfordnlp.github.io/stanza/available_models.html) can theoretically be used during the `parse` command, though this feature isn't yet added.
+`keyfayqua`'s `parse` command takes advantage of SpaCy's Python architecture as well as high-performance dependency parsers specially trained for French and English. For French, we use one of Loïc Grobol and Benoît Crabbés [Hopsparser models](https://zenodo.org/record/7703346/). For English, we use Stanford NLP's [Stanza model](https://github.com/stanfordnlp/stanza).
 
 #### Hopsparser (French)
 
