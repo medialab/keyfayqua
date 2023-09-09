@@ -6,6 +6,8 @@ from ebbe import Timer
 from rich import print
 from typing_extensions import Annotated
 
+from src.cli.test_conll import parse_conll_string
+
 from src.cli.match_command import (
     MatchIndex,
     MatchProgress,
@@ -174,6 +176,27 @@ def match(
 
         else:
             compress_outfile(outfile)
+
+
+@app.command("test-conll")
+def test_conll(
+    datafile: Annotated[
+        Path,
+        typer.Option(
+            exists=True,
+            file_okay=True,
+            dir_okay=False,
+            writable=False,
+            readable=True,
+            resolve_path=True,
+            help="Path to file with Conll results",
+        ),
+    ],
+    conll_col: Annotated[
+        str, typer.Option(help="CoNLL string column name")
+    ] = "conll_string",
+):
+    parse_conll_string(datafile=datafile, conll_string_col=conll_col)
 
 
 if __name__ == "__main__":
