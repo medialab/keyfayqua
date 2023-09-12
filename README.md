@@ -7,8 +7,8 @@
 1. [How to install](#install)
 2. [How to use](#usage)
    1. [`parse` command](#keyfayqua-parse--initially-parse-texts) (intially parse the text documents)
-   2. [`test-conll` command](#test-conll-string-validity) (test CoNLL string validity)
-   3. [`match` comand](#match-dependency-patterns) (apply Semgrex patterns to match syntactic relationships)
+   2. [`test-conll` command](#keyfayqua-test-conll--test-conll-string-validity) (test CoNLL string validity)
+   3. [`match` comand](#keyfayqua-match--match-dependency-patterns) (apply Semgrex patterns to match syntactic relationships)
    4. [Match output](#match-output)
 3. [Optional pre-processing](#optional-pre-processing)
 
