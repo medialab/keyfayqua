@@ -2,7 +2,6 @@ from pathlib import Path
 
 import torch
 import typer
-from ebbe import Timer
 from rich import print
 from typing_extensions import Annotated
 
@@ -23,9 +22,6 @@ from src.utils.filesystem import (
     compress_outfile,
     count_file_length,
 )
-
-match_dir = Path("semgrex")
-match_dir.mkdir(exist_ok=True)
 
 app = typer.Typer()
 
@@ -64,7 +60,7 @@ def parse(
 
         # STEP THREE --------------------------
         # Parse the document's texts
-        with ParseProgress as p, Timer(name="Annotation pipeline"):
+        with ParseProgress as p:
             task = p.add_task(description="[bold cyan]Parsing...", total=infile_length)
             try:
                 with ParseEnricher(datafile, outfile, id_col) as enricher:
@@ -127,13 +123,14 @@ def match(
         str, typer.Option(help="CoNLL string column name")
     ] = "conll_string",
     model: Annotated[ModelType, typer.Option(case_sensitive=False)] = ModelType.stanza,
+    spacy_language: str = "en_core_web_lg",
     lang: str = "en",
     model_path: str = "",
 ):
     torch.set_num_threads(1)
     # STEP ONE --------------------------
     # Set up the parsers
-    conll_parser = ConLLParser(lang=lang)
+    conll_parser = ConLLParser(spacy_language=spacy_language)
     dep_parser = setup_parser(model, lang, model_path)
     if dep_parser:
         # STEP TWO --------------------------
@@ -149,7 +146,7 @@ def match(
 
         # STEP FOUR --------------------------
         # Process the file
-        with MatchProgress as p, Timer(name="DependencyMatcher"):
+        with MatchProgress as p:
             task = p.add_task(description="[bold cyan]Matching...", total=infile_length)
             try:
                 with MatchEnricher(

@@ -1,0 +1,2 @@
+id,SOV_ROOT_id,SOV_ROOT_lemma,SOV_ROOT_pos,SOV_ROOT_deprel,SOV_ROOT_entity,SOV_ROOT_noun_phrase,SOV_SUBJECT_id,SOV_SUBJECT_lemma,SOV_SUBJECT_pos,SOV_SUBJECT_deprel,SOV_SUBJECT_entity,SOV_SUBJECT_noun_phrase,SOV_OBJECT_id,SOV_OBJECT_lemma,SOV_OBJECT_pos,SOV_OBJECT_deprel,SOV_OBJECT_entity,SOV_OBJECT_noun_phrase
+1646957012859736070,6,able,ADJ,ccomp,,,4,chatgpt,NOUN,nsubj,,,9,concept,NOUN,obj,,

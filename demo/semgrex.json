@@ -1,0 +1,20 @@
+{
+  "SOV": [
+    {
+      "RIGHT_ID": "root",
+      "RIGHT_ATTRS": { "DEP": { "IN": ["root", "ccomp"] } }
+    },
+    {
+      "LEFT_ID": "root",
+      "REL_OP": ">",
+      "RIGHT_ID": "subject",
+      "RIGHT_ATTRS": { "DEP": { "IN": ["nsubj", "nsubjpass"] } }
+    },
+    {
+      "LEFT_ID": "root",
+      "REL_OP": ">>",
+      "RIGHT_ID": "object",
+      "RIGHT_ATTRS": { "DEP": { "IN": ["obj", "pobj"] } }
+    }
+  ]
+}

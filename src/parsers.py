@@ -146,9 +146,9 @@ class BaseUDPipeParser:
 
 
 class ConLLParser:
-    def __init__(self, lang: str) -> None:
+    def __init__(self, spacy_language: str) -> None:
         # Load language
-        self.nlp = SpacyConllParse(init_parser(lang, "spacy"))
+        self.nlp = SpacyConllParse(init_parser(spacy_language, "spacy"))
 
     def __call__(self, text: str) -> Doc:
         return self.nlp.parse_conll_text_as_spacy(text=text)
