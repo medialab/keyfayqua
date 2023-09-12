@@ -13,17 +13,6 @@ like_count         0
 reply_count        0
 impression_count   89
 lang               en
-
-query              ChatGPT lang:en
-id                 1650763506449522694
-local_time         2023-04-25T07:27:44
-text               @Stake Joke from chatgpt ? 🤣
-possibly_sensitive 0
-retweet_count      0
-like_count         0
-reply_count        0
-impression_count   5
-lang               en
 ```
 
 # Parse command
