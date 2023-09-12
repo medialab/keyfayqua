@@ -5,7 +5,7 @@ from collections import OrderedDict
 import casanova
 from spacy.tokens.doc import Doc
 
-from src.parsers import ConLLParser, EnglishParser, FrenchParser
+from src.parsers import ConLLParser, SpacyParser
 
 from rich.progress import (
     BarColumn,
@@ -80,7 +80,7 @@ class MatchIndex:
 
 
 def match_dependencies(
-    doc: Doc, parser: FrenchParser | EnglishParser, match_index: MatchIndex
+    doc: Doc, parser: SpacyParser, match_index: MatchIndex
 ) -> Generator[list, None, None]:
     # Deploy DependencyMatcher
     matches_in_doc = parser.matcher(doc)

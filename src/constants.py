@@ -5,6 +5,7 @@ DEFAULT_HOPSPARSER_MODEL_URI = "https://zenodo.org/record/7703346/files/UD_all_s
 DEFAULT_HOPSPARSER_MODEL_NAME = "UD_all_spoken_French-flaubert"
 
 
-class SupportedLang(str, Enum):
-    en = "en"
-    fr = "fr"
+class ModelType(str, Enum):
+    hop = "hopsparser"
+    stanza = "stanza"
+    spacy = "spacy"

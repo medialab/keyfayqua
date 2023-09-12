@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from src.constants import SupportedLang
+from src.constants import ModelType
 from src.main import parse
 
 test_dir = Path("test")
@@ -12,7 +12,8 @@ ENGLISH_KWARGS = {
     "outfile": outdir.joinpath("english", "english.conll.csv"),
     "id_col": "id",
     "text_col": "text",
-    "lang": SupportedLang.en,
+    "model": ModelType.stanza,
+    "lang": "en",
     "clean_social": True,
 }
 
@@ -21,7 +22,8 @@ FRENCH_KWARGS = {
     "outfile": outdir.joinpath("french", "french.conll.csv"),
     "id_col": "id",
     "text_col": "text",
-    "lang": SupportedLang.fr,
+    "model": ModelType.hop,
+    "lang": "fr",
     "clean_social": True,
     "model_path": "./hopsparser_model/UD_all_spoken_French-flaubert",
 }

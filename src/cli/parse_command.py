@@ -1,8 +1,6 @@
-import subprocess
-from pathlib import Path
+from typing import Generator, Iterable, Tuple
 
-import typer
-from casanova import Enricher
+from casanova import Enricher, Reader
 from ebbe import as_chunks
 from rich.progress import (
     BarColumn,
@@ -14,55 +12,7 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
-from src.constants import DEFAULT_HOPSPARSER_MODEL_NAME, DEFAULT_HOPSPARSER_MODEL_URI
-from src.parsers import EnglishParser, FrenchParser
 from src.utils.normalizer import normalizer
-
-
-def setup_parser(
-    lang: str, model_path: str | None = None
-) -> FrenchParser | EnglishParser:
-    if lang == "fr":
-        if model_path == "":
-            need_to_download = typer.confirm(
-                "\nDo you need to download the Hopsparser model for French?"
-            )
-            if not need_to_download:
-                french_model_path = typer.prompt(
-                    text="\nWhere is the downloaded Hopsparser model?",
-                )
-                french_model = str(french_model_path)
-            else:
-                print(f"\nDownloading model from: '{DEFAULT_HOPSPARSER_MODEL_URI}'")
-                subprocess.run(
-                    [
-                        "curl",
-                        "-o",
-                        "hopsparser_archive.tar.xz",
-                        DEFAULT_HOPSPARSER_MODEL_URI,
-                    ]
-                )
-                hopsparser_model_dir = "hopsparser_model"
-                Path(hopsparser_model_dir).mkdir(exist_ok=True)
-                print(f"\nUnpacking model in directory '{hopsparser_model_dir}'...")
-                subprocess.run(
-                    [
-                        "tar",
-                        "-xf",
-                        "hopsparser_archive.tar.xz",
-                        "-C",
-                        hopsparser_model_dir,
-                    ]
-                )
-                french_model = str(
-                    Path(hopsparser_model_dir).joinpath(DEFAULT_HOPSPARSER_MODEL_NAME)
-                )
-        else:
-            french_model = model_path
-        parser = FrenchParser(model_path=french_model)
-    else:
-        parser = EnglishParser()
-    return parser
 
 
 ParseProgress = Progress(
@@ -75,15 +25,33 @@ ParseProgress = Progress(
 )
 
 
-def parser_batches(enricher: Enricher, text_col: str, batch_size: int):
-    def reverse_tuples(batch: list[tuple]):
-        return [t[::-1] for t in batch]
+def yield_batches_of_texts(
+    reader: Enricher | Reader, text_col: str, batch_size: int
+) -> Generator[Iterable[Tuple[str, list[str]]], None, None]:
+    """
+    From a tuple (a CSV row and a selected column), yield batches
+    of tuples but inverted so that the first item in each tuple
+    is the selected column (str) and the second item is the row (list).
+    """
+
+    def reverse_tuples(
+        batch: Iterable[Tuple[list[str], str]]
+    ) -> Iterable[Tuple[str, list[str]]]:
+        """
+        For every tuple in the batch, reverse the order, putting
+        the text column (string) first and the row (list) second.
+        """
+        return [(text, row) for row, text in batch]
 
     for batch in as_chunks(
-        size=batch_size, iterable=enricher.cells(text_col, with_rows=True)
+        size=batch_size, iterable=reader.cells(text_col, with_rows=True)
     ):
         yield reverse_tuples(batch)
 
 
-def preprocess(batch):
-    return [(normalizer(t[0]), t[1]) for t in batch]
+def preprocess(batch) -> Iterable[Tuple[str, list[str]]]:
+    """
+    For every tuple of text and CSV row in a batch, pre-process the
+    text and return the batch of text-row tuples.
+    """
+    return [(normalizer(text), row) for text, row in batch]

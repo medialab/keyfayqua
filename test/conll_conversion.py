@@ -4,7 +4,7 @@ import unittest
 from spacy.tokens.doc import Doc
 
 
-BATCH = [
+MISSING_LEMMA_BATCH = [
     (
         "Research preview of our newest model: ChatGPT We're trying something new with this preview: Free and immediately available for everyone (no waitlist!) « OpenAI: Try talking with ChatGPT, our new AI system which is optimized for dialogue. Your feedback will help us improve it. — »",
         1,
@@ -17,10 +17,10 @@ BATCH = [
 
 
 class LegitimateString(unittest.TestCase):
-    def test_string(self):
+    def test_missing_lemma(self):
         dep_parser = setup_parser(lang="en")
         conll_parser = ConLLParser(lang="en")
-        for doc, _ in dep_parser.pipe(batch=BATCH, batch_size=1):
+        for doc, _ in dep_parser.pipe(batch=MISSING_LEMMA_BATCH, batch_size=1):
             conll_str = doc._.conll_str
             doc = conll_parser(conll_str)
             assert isinstance(doc, Doc)

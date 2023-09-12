@@ -1,13 +1,7 @@
 import unittest
 from pathlib import Path
-import casanova
-from src.constants import SupportedLang
+from src.constants import ModelType
 
-
-from src.cli.match_command import MatchIndex, conll_converter
-from src.utils.filesystem import MatchEnricher
-from src.parsers import ConLLParser
-from spacy.tokens.doc import Doc
 from src.main import match
 
 test_dir = Path("test")
@@ -19,7 +13,8 @@ FRENCH_KWARGS = {
     "datafile": outdir.joinpath("french", "french.conll.csv.gz"),
     "outfile": outdir.joinpath("french", "french.deps.csv"),
     "model_path": "./hopsparser_model/UD_all_spoken_French-flaubert",
-    "lang": SupportedLang.fr,
+    "model": ModelType.hop,
+    "lang": "fr",
 }
 
 ENGLISH_KWARGS = {
@@ -27,7 +22,8 @@ ENGLISH_KWARGS = {
     "datafile": outdir.joinpath("english", "english.conll.csv.gz"),
     "outfile": outdir.joinpath("english", "english.deps.csv"),
     "model_path": "./hopsparser_model/UD_all_spoken_French-flaubert",
-    "lang": SupportedLang.en,
+    "model": ModelType.stanza,
+    "lang": "en",
 }
 
 
