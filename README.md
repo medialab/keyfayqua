@@ -116,7 +116,7 @@ Sometimes it's useful to quickly test the integrity of your CoNLL format. The co
 
 ### `keyfayqua match` : Match dependency patterns
 
-After creating a data file with annotated tokens correctly formatted in a CoNLL strings, you're ready to apply [Semgrex](https://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/semgraph/semgrex/SemgrexPattern.html) matches and detect syntactic relationships. First, you'll need a JSON file with a set of Semgrex match patterns. See an example [here](#composing-the-semgrex-file). Then, you'll call the `match` command, as explained [here](#calling-the-match-command).
+After creating a data file with annotated tokens correctly formatted in CoNLL strings, you're ready to apply [Semgrex](https://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/semgraph/semgrex/SemgrexPattern.html) matches and detect syntactic relationships. First, you'll need a JSON file with a set of Semgrex match patterns. See an example [here](#composing-the-semgrex-file). Then, you'll call the `match` command, as explained [here](#calling-the-match-command).
 
 #### Composing the Semgrex file
 
@@ -147,7 +147,7 @@ In both SpaCy's Python dictionary and `keyfayqua`'s JSON format, the ordered arr
 ]
 ```
 
-Whereas in Python the pattern's array of nodes is attributed to a variable, in the JSON format, the array is the value in a JSON key-value wherein the key is the pattern's identifying name.
+Whereas in Python the pattern's array of nodes is attributed to a variable, in the JSON format, the array is the value in a JSON key-value pair wherein the key is the pattern's identifying name.
 
 ```json
 {
