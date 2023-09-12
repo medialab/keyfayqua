@@ -32,7 +32,9 @@ pip install -e .
    - `pip install thinc-apple-ops`
    - `pip install spacy[apple]`
 
-## `keyfayqua parse` : Initially parse texts
+## Usage
+
+### `keyfayqua parse` : Initially parse texts
 
 The `parse` command is the first step to detecting dependency relationship patterns. It takes in a corpus of text documents, given as a CSV file, and outputs CoNLL-formatted string representations of the parsed documents, also in a CSV file. Optionally, with the `--clean-social` flag, you can [pre-process](#optional-pre-processing) the text with a cleaning script designed for social media posts, specifically Twitter. For help, type `keyfayqua parse --help`.
 
@@ -95,9 +97,7 @@ Upon completion or exit of the `parse` command, the CSV file to which the progra
 2. the version of the text that was parsed
 3. the CoNLL-formatted string
 
-## Usage
-
-### Test CoNLL string validity
+### `keyfayqua test-conll` : Test CoNLL string validity
 
 Sometimes it's useful to quickly test the integrity of your CoNLL format. The command `test-conll` requires the path to the file whose strings you want to test, and optionally the name of the strings' column if other than the default "conll_string". The program will raise an error and show you the problematic string if it finds an invalid CoNLL format. Otherwise it will exit upon completion.
 
@@ -114,9 +114,9 @@ Sometimes it's useful to quickly test the integrity of your CoNLL format. The co
 
 ```
 
-### Match dependency patterns
+### `keyfayqua match` : Match dependency patterns
 
-After creating a data file with annotated tokens correctly formatted in a CoNLL strings, you're ready to apply Semgrex matches and detect syntactic relationships. First, you'll need a JSON file with a set of Semgrex match patterns. See an example [here](#composing-the-semgrex-file). Then, you'll call the `match` command, as explained [here](#calling-the-match-command).
+After creating a data file with annotated tokens correctly formatted in a CoNLL strings, you're ready to apply [Semgrex](https://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/semgraph/semgrex/SemgrexPattern.html) matches and detect syntactic relationships. First, you'll need a JSON file with a set of Semgrex match patterns. See an example [here](#composing-the-semgrex-file). Then, you'll call the `match` command, as explained [here](#calling-the-match-command).
 
 #### Composing the Semgrex file
 
