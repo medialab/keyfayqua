@@ -1,0 +1,20 @@
+{
+  "SOV": [
+    {
+      "RIGHT_ID": "verb",
+      "RIGHT_ATTRS": { "POS": "VERB" }
+    },
+    {
+      "LEFT_ID": "verb",
+      "REL_OP": ">",
+      "RIGHT_ID": "subject",
+      "RIGHT_ATTRS": { "DEP": { "IN": ["nsubj", "nsubjpass"] } }
+    },
+    {
+      "LEFT_ID": "verb",
+      "REL_OP": ">>",
+      "RIGHT_ID": "object",
+      "RIGHT_ATTRS": { "DEP": { "IN": ["obj", "pobj"] } }
+    }
+  ]
+}

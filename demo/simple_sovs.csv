@@ -1,0 +1,3 @@
+id,SOV_VERB_id,SOV_VERB_lemma,SOV_VERB_pos,SOV_VERB_deprel,SOV_VERB_entity,SOV_VERB_noun_phrase,SOV_SUBJECT_id,SOV_SUBJECT_lemma,SOV_SUBJECT_pos,SOV_SUBJECT_deprel,SOV_SUBJECT_entity,SOV_SUBJECT_noun_phrase,SOV_OBJECT_id,SOV_OBJECT_lemma,SOV_OBJECT_pos,SOV_OBJECT_deprel,SOV_OBJECT_entity,SOV_OBJECT_noun_phrase
+1613784435819962368,4,use,VERB,ROOT,,,2,Chatgpt,PROPN,nsubj,,,7,dollar,NOUN,obj,,
+1613784435819962368,4,use,VERB,ROOT,,,2,Chatgpt,PROPN,nsubj,,,10,mos,NOUN,obj,,
